@@ -121,16 +121,23 @@ class BaseDetachNcclSync:
 
     @register(dispatch_mode=Dispatch.ONE_TO_ALL, blocking=False)
     def init_checkpoint_engine(self, rank_offset: int, actor_num: int, rollout_num: int):
-        from .checkpoint_engine import CheckpointEngine
+        # from .checkpoint_engine import CheckpointEngine
+        from verl.checkpoint_engine import CheckpointEngineRegistry
 
         current_rank = torch.distributed.get_rank() + rank_offset
         actor_ranks = list(range(actor_num))
         rollout_ranks = [rank + actor_num for rank in range(rollout_num)]
         assert rank_offset == 0 or rank_offset == actor_num
 
-        self.checkpoint_engine = CheckpointEngine(
-            current_rank, actor_ranks, rollout_ranks, self.config.checkpoint_engine.device_buffer_size_M
-        )
+        checkpoint_backend = "hccl"
+        if torch.distributed.get_rank() == 0 and checkpoint_backend in ["nccl", "hccl"]:
+            checkpoint_kwargs["is_master"] = True
+            self.checkpoint_engine = CheckpointEngineRegistry.new(checkpoint_backend, **checkpoint_kwargs)
+        self.checkpoint_engine.init_process_group()
+
+        # self.checkpoint_engine = CheckpointEngine(
+        #     current_rank, actor_ranks, rollout_ranks, self.config.checkpoint_engine.device_buffer_size_M
+        # )
 
     @staticmethod
     def get_inference_model(rollout):

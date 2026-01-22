@@ -161,18 +161,20 @@ class DetachNcclSync(BaseDetachNcclSync, AsyncActorRolloutRefWorker):
         update_start_time = time.time()
 
         inference_model = None
+        # 确定role
         if self._is_rollout:
             inference_model = BaseDetachNcclSync.get_inference_model(self.rollout)
             from verl.utils.vllm.patch import patch_vllm_moe_model_weight_loader
 
             patch_vllm_moe_model_weight_loader(inference_model)
+            self.checkpoint_engine.receive_weights()
 
         # Update the checkpoint with the inference model and broadcast weights
-        self.checkpoint_engine.update_checkpoint(
-            inference_model=inference_model,
-            group_name=sync_group_name,
-            overlap_broadcast_and_consume=self.config.checkpoint_engine.overlap_broadcast_and_consume,
-        )
+        # self.checkpoint_engine.update_checkpoint(
+        #     inference_model=inference_model,
+        #     group_name=sync_group_name,
+        #     overlap_broadcast_and_consume=self.config.checkpoint_engine.overlap_broadcast_and_consume,
+        # )
 
         update_end_time = time.time()
         update_duration = update_end_time - update_start_time
