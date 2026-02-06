@@ -49,6 +49,10 @@ class DAPORewardManager(AbstractRewardManager):
             assert self.max_resp_len >= self.overlong_buffer_cfg.len, (
                 "max_resp_len must be larger than overlong_buffer.len"
             )
+            assert not (self.overlong_buffer_cfg.enable and self.overlong_buffer_cfg.len == 0), (
+                "Setting overlong_buffer.len = 0 will result in a nan reward. "
+                "To disable the overlong penalty, set overlong_buffer.enable = False"
+            )
 
     def __call__(self, data: DataProto, return_dict: bool = False):
         """We will expand this function gradually based on the available datasets"""

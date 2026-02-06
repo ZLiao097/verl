@@ -43,6 +43,10 @@ class DAPORewardManager(RewardManagerBase):
             assert self.max_resp_len >= self.overlong_buffer_cfg.len, (
                 "max_resp_len must be larger than overlong_buffer.len"
             )
+            assert not (self.overlong_buffer_cfg.enable and self.overlong_buffer_cfg.len == 0), (
+                "Setting overlong_buffer.len = 0 will result in a nan reward. "
+                "To disable the overlong penalty, set overlong_buffer.enable = False"
+            )
 
     async def run_single(self, data: DataProto) -> dict:
         assert len(data) == 1, "Only support single data item"
