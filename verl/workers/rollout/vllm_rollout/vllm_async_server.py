@@ -261,9 +261,10 @@ class vLLMHttpServer:
         else:
             cudagraph_mode = compilation_config.get("cudagraph_mode", "FULL_DECODE_ONLY")
             compilation_config = json.dumps({"cudagraph_mode": cudagraph_mode})
+        # "load_format": self.config.load_format,
         args = {
             "dtype": self.config.dtype,
-            "load_format": self.config.load_format,
+            "load_format": "safetensors",
             "skip_tokenizer_init": False,
             "distributed_executor_backend": "mp",
             "worker_extension_cls": "verl.workers.rollout.vllm_rollout.utils.vLLMColocateWorkerExtension",

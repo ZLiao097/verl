@@ -177,8 +177,11 @@ class FullyAsyncAgentLoopWorker(AgentLoopWorker):
                 assert agent_name in _agent_loop_registry, (
                     f"Agent loop {agent_name} not registered, registered agent loops: {_agent_loop_registry.keys()}"
                 )
-
+                
                 agent_loop_config = _agent_loop_registry[agent_name]
+                # fix tag lihaozhe
+                # print(f"_agent_loop_registry: {_agent_loop_registry}")
+                # print(f"agent_loop_config: {agent_loop_config}")
                 agent_loop = hydra.utils.instantiate(
                     config=agent_loop_config,
                     trainer_config=DictConfigWrap(config=self.config),
@@ -186,7 +189,8 @@ class FullyAsyncAgentLoopWorker(AgentLoopWorker):
                     tokenizer=self.tokenizer,
                     processor=self.processor,
                     dataset_cls=self.dataset_cls,
-                    dataset_config=self.config.data,
+                    # dataset_config=self.config.data,
+                    dataset_config=DictConfigWrap(config=self.config.data),
                 )
                 output: AgentLoopOutput = await agent_loop.run(
                     sampling_params, cancellation_event=self.cancellation_event, **kwargs
