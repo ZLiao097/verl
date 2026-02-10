@@ -104,6 +104,19 @@ def create_role_worker_mapping(config):
     else:
         raise NotImplementedError(f"Unsupported strategy: {config.actor_rollout_ref.actor.strategy}")
 
+    use_legacy_worker_impl = config.trainer.get("use_legacy_worker_impl", "auto")
+    if use_legacy_worker_impl == "disable":
+        from verl.experimental.fully_async_policy.engine_workers import (
+            DetachActorWorker,
+            DetachAsyncRolloutWorker,
+            TrainingWorker,
+        )
+        from verl.single_controller.ray import RayWorkerGroup
+
+        ray_worker_group_cls = RayWorkerGroup
+
+        CriticWorker = TrainingWorker
+
     train_role = Role.ActorRollout if config.async_training.use_trainer_do_validate else Role.Actor
     role_worker_mapping = {
         train_role: ray.remote(DetachActorWorker),
