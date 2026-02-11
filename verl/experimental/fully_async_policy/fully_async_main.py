@@ -106,7 +106,7 @@ def create_role_worker_mapping(config):
 
     use_legacy_worker_impl = config.trainer.get("use_legacy_worker_impl", "auto")
     if use_legacy_worker_impl == "disable":
-        from verl.experimental.fully_async_policy.engine_workers import (
+        from verl.experimental.separation.engine_workers import (
             DetachActorWorker,
             DetachAsyncRolloutWorker,
             TrainingWorker,
