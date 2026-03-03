@@ -89,7 +89,7 @@ class BroadcastOperation:
         return self.metadata
 
 
-@CheckpointEngineRegistry.register("hccl")
+@CheckpointEngineRegistry.register("nccl")
 class HCCLCheckpointEngine(CheckpointEngine):
     """HCCL checkpoint engine with collective communication.
 
