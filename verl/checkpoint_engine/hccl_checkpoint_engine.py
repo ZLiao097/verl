@@ -23,8 +23,12 @@ import zmq
 from vllm.distributed.utils import StatelessProcessGroup
 
 from verl.checkpoint_engine.base import CheckpointEngine, CheckpointEngineRegistry, TensorMeta
+from verl.utils.device import is_npu_available
 from verl.utils.distributed import stateless_init_process_group
 from verl.utils.net_utils import get_free_port, is_valid_ipv6_address
+
+if not is_npu_available:
+    raise ImportError("HCCLCheckpointEngine is not available")
 
 logger = logging.getLogger(__name__)
 logger.setLevel(os.getenv("VERL_LOGGING_LEVEL", "WARN"))
