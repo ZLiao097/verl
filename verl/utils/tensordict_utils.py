@@ -890,6 +890,6 @@ def maybe_fix_3d_position_ids(data: TensorDict):
                 # offsets.shape: [wrong](0, 4, 8, ...)           -> [correct](0, seq_len, 2 * seq_len, ...)
                 # values.shape : [wrong](4 * batch_num, seq_len) -> [correct](4, batch_num * seq_len)
                 offsets = torch.arange(0, (batch_num + 1) * seq_len, seq_len, dtype=offsets.dtype)
-                values = values.view(batch_num, 4, -1).transpose(0, 1).flatten(1)
+                values = values.contiguous().view(batch_num, 4, -1).transpose(0, 1).flatten(1)
 
             data["position_ids"] = torch.nested.nested_tensor_from_jagged(values=values, offsets=offsets, jagged_dim=2)
