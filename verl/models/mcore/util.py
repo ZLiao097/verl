@@ -705,7 +705,7 @@ def postprocess_bshd_engine(
     return output_new_tensor
 
 
-def build_vlm_attn_mask_thd(input_ids: torch.Tensor, pad_token_id: int = None) -> Optional[torch.Tensor]:
+def build_vlm_attn_mask_thd(input_ids: torch.Tensor, pad_token_id: int = None):
     input_ids_rmpad = input_ids.to_padded_tensor(pad_token_id)
 
     if is_npu_available:
@@ -719,9 +719,7 @@ def build_vlm_attn_mask_thd(input_ids: torch.Tensor, pad_token_id: int = None) -
     return input_ids_rmpad, attention_mask
 
 
-def build_vlm_attn_mask_bshd(
-    input_ids: torch.Tensor, batch_size: int, pad_token_id: int = None
-) -> Optional[torch.Tensor]:
+def build_vlm_attn_mask_bshd(input_ids: torch.Tensor, batch_size: int, pad_token_id: int = None):
     seqlens_in_batch = input_ids.offsets().diff()
     max_seqlen = seqlens_in_batch.max().item()
 
